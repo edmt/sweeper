@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/codegangsta/cli"
 	"github.com/edmt/sweeper/fs"
-  "github.com/edmt/sweeper/xmlreplacer"
+	"github.com/edmt/sweeper/xmlreplacer"
 	"os"
 )
 
@@ -23,20 +23,20 @@ func main() {
 	}
 	app.Action = func(c *cli.Context) {
 		globPatternList := fs.GetGlobPatternList(
-      c.String("baseDir"),
-      c.String("year"),
-      c.String("month"),
-      c.String("day"))
+			c.String("baseDir"),
+			c.String("year"),
+			c.String("month"),
+			c.String("day"))
 
 		fmt.Printf("Directorios pendientes de procesar: %d\n", len(globPatternList))
 		for _, globPattern := range globPatternList {
 			files, _ := fs.ListFiles(globPattern)
 			fmt.Printf("%d archivos en directorio %s\n", len(files), globPattern)
 			for _, filePath := range files {
-        backUpFilePath := xmlreplacer.Format(filePath, c.String("baseDir"), c.String("backUpDir"))
-        fs.Mkdir(backUpFilePath)
-        fs.Cp(filePath, backUpFilePath)
-        xmlreplacer.Replace(filePath)
+				backUpFilePath := xmlreplacer.Format(filePath, c.String("baseDir"), c.String("backUpDir"))
+				fs.Mkdir(backUpFilePath)
+				fs.Cp(filePath, backUpFilePath)
+				xmlreplacer.Replace(filePath)
 			}
 		}
 	}
