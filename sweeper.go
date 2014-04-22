@@ -12,7 +12,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "sweeper"
 	app.Usage = "Me llama usted, entonces voy, Don Barredora es quien yo soy 🎵"
-	app.Version = "0.1.0"
+	app.Version = "0.1.2"
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{"baseDir", "", "Directorio base para iniciar la búsqueda"},
@@ -33,11 +33,12 @@ func main() {
 			files, _ := fs.ListFiles(globPattern)
 			fmt.Printf("%d archivos en directorio %s\n", len(files), globPattern)
 			for _, filePath := range files {
-				if xmlreplacer.Replace(filePath) {
+				whenReplaced := func() {
 					backUpFilePath := xmlreplacer.Format(filePath, c.String("baseDir"), c.String("backUpDir"))
 					fs.Mkdir(backUpFilePath)
 					fs.Cp(filePath, backUpFilePath)
 				}
+				xmlreplacer.Replace(filePath, whenReplaced)
 			}
 		}
 	}

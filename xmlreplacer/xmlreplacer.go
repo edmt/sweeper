@@ -19,11 +19,12 @@ const (
 	NAMESPACE_CFDV2                    = "http://www.sat.gob.mx/cfd/2"
 )
 
-func Replace(filename string) bool {
+func Replace(filename string, callback func()) bool {
 	contents, errOnRead := ioutil.ReadFile(filename)
 	if errOnRead == nil {
-		new_content, errOnFix := fixSchemaLocation(string(contents))
-		if errOnFix == nil {
+		new_content, hasChanged := fixSchemaLocation(string(contents))
+		if hasChanged == true {
+			callback()
 			new_content_in_bytes := []byte(new_content)
 			errOnWrite := ioutil.WriteFile(filename, new_content_in_bytes, 0644)
 			if errOnWrite != nil {
@@ -35,7 +36,7 @@ func Replace(filename string) bool {
 	return false
 }
 
-func fixSchemaLocation(contents string) (string, error) {
+func fixSchemaLocation(contents string) (string, bool) {
 	if !strings.Contains(contents, ELEMENTO_TFD_CON_DEFINICION_OK) && !strings.Contains(contents, NAMESPACE_CFDV2) {
 		caso_timbre := false
 		new_content := contents
@@ -57,9 +58,9 @@ func fixSchemaLocation(contents string) (string, error) {
 			// Reemplazar elemento del timbre por elemento con definición correcta (corta)
 			new_content = strings.Replace(new_content, ELEMENTO_TFD, ELEMENTO_TFD_CON_DEFINICION_OK, -1)
 		}
-		return new_content, nil
+		return new_content, true
 	}
-	return contents, fmt.Errorf("Not correction required")
+	return contents, false
 }
 
 func Format(str, oldFormat, newFormat string) string {
