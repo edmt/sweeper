@@ -33,10 +33,11 @@ func main() {
 			files, _ := fs.ListFiles(globPattern)
 			fmt.Printf("%d archivos en directorio %s\n", len(files), globPattern)
 			for _, filePath := range files {
-				backUpFilePath := xmlreplacer.Format(filePath, c.String("baseDir"), c.String("backUpDir"))
-				fs.Mkdir(backUpFilePath)
-				fs.Cp(filePath, backUpFilePath)
-				xmlreplacer.Replace(filePath)
+				if xmlreplacer.Replace(filePath) {
+					backUpFilePath := xmlreplacer.Format(filePath, c.String("baseDir"), c.String("backUpDir"))
+					fs.Mkdir(backUpFilePath)
+					fs.Cp(filePath, backUpFilePath)
+				}
 			}
 		}
 	}
