@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/codegangsta/cli"
-	"github.com/edmt/sweeper/fs"
-	"github.com/edmt/sweeper/xmlreplacer"
 	"os"
 )
 
@@ -12,7 +10,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "sweeper"
 	app.Usage = "Me llama usted, entonces voy, Don Barredora es quien yo soy 🎵"
-	app.Version = "0.1.2"
+	app.Version = "0.1.3"
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{"baseDir", "", "Directorio base para iniciar la búsqueda"},
@@ -22,7 +20,7 @@ func main() {
 		cli.StringFlag{"backUpDir", "", "Directorio base para respaldo"},
 	}
 	app.Action = func(c *cli.Context) {
-		globPatternList := fs.GetGlobPatternList(
+		globPatternList := GetGlobPatternList(
 			c.String("baseDir"),
 			c.String("year"),
 			c.String("month"),
@@ -30,15 +28,10 @@ func main() {
 
 		fmt.Printf("Directorios pendientes de procesar: %d\n", len(globPatternList))
 		for _, globPattern := range globPatternList {
-			files, _ := fs.ListFiles(globPattern)
+			files, _ := ListFiles(globPattern)
 			fmt.Printf("%d archivos en directorio %s\n", len(files), globPattern)
 			for _, filePath := range files {
-				whenReplaced := func() {
-					backUpFilePath := xmlreplacer.Format(filePath, c.String("baseDir"), c.String("backUpDir"))
-					fs.Mkdir(backUpFilePath)
-					fs.Cp(filePath, backUpFilePath)
-				}
-				xmlreplacer.Replace(filePath, whenReplaced)
+				Replace(filePath, c)
 			}
 		}
 	}

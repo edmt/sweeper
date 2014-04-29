@@ -1,7 +1,8 @@
-package xmlreplacer
+package main
 
 import (
 	"fmt"
+	"github.com/codegangsta/cli"
 	"io/ioutil"
 	"strings"
 )
@@ -19,12 +20,14 @@ const (
 	NAMESPACE_CFDV2                    = "http://www.sat.gob.mx/cfd/2"
 )
 
-func Replace(filename string, callback func()) bool {
+func Replace(filename string, c *cli.Context) bool {
 	contents, errOnRead := ioutil.ReadFile(filename)
 	if errOnRead == nil {
 		new_content, hasChanged := fixSchemaLocation(string(contents))
 		if hasChanged == true {
-			callback()
+			backUpFilePath := Format(filename, c.String("baseDir"), c.String("backUpDir"))
+			BackUp(filename, backUpFilePath)
+
 			new_content_in_bytes := []byte(new_content)
 			errOnWrite := ioutil.WriteFile(filename, new_content_in_bytes, 0644)
 			if errOnWrite != nil {

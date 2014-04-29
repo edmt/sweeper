@@ -1,4 +1,4 @@
-package fs
+package main
 
 import (
 	"io"
@@ -24,13 +24,13 @@ func getRFCList(baseDir string) (matches []string, err error) {
 	return filepath.Glob(filepath.Join(baseDir, "*"))
 }
 
-func Cp(src, dst string) (err error) {
-	in, err := os.Open(src)
+func Copy(source, destination string) (err error) {
+	in, err := os.Open(source)
 	if err != nil {
 		return
 	}
 	defer in.Close()
-	out, err := os.Create(dst)
+	out, err := os.Create(destination)
 	if err != nil {
 		return
 	}
@@ -51,4 +51,9 @@ func Mkdir(path string) {
 	if err := os.MkdirAll(filepath.Dir(path), 0777); err != nil {
 		println(err.Error())
 	}
+}
+
+func BackUp(source, destination string) {
+	Mkdir(destination)
+	Copy(source, destination)
 }
