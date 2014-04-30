@@ -1,46 +1,49 @@
 package main
 
 import (
-	"fmt"
+	l4g "code.google.com/p/log4go"
 	"github.com/codegangsta/cli"
-	"github.com/edmt/sweeper/fs"
-	"github.com/edmt/sweeper/xmlreplacer"
 	"os"
+	"time"
 )
+
+const LOG_CONFIGURATION_FILE = "logging-conf.xml"
+
+func init() {
+	l4g.LoadConfiguration(LOG_CONFIGURATION_FILE)
+}
 
 func main() {
 	app := cli.NewApp()
 	app.Name = "sweeper"
 	app.Usage = "Me llama usted, entonces voy, Don Barredora es quien yo soy 🎵"
-	app.Version = "0.1.2"
+	app.Version = "0.1.4"
 
 	app.Flags = []cli.Flag{
-		cli.StringFlag{"baseDir", "", "Directorio base para iniciar la búsqueda"},
-		cli.StringFlag{"year", "", "Año para formar el patrón en la búsqueda de directorios"},
-		cli.StringFlag{"month", "", "Mes para formar el patrón en la búsqueda de directorios"},
-		cli.StringFlag{"day", "", "Día para formar el patrón en la búsqueda de directorios"},
-		cli.StringFlag{"backUpDir", "", "Directorio base para respaldo"},
+		cli.StringFlag{"baseDir", "undefined", "Directorio base para iniciar la búsqueda"},
+		cli.StringFlag{"year", "undefined", "Año para formar el patrón en la búsqueda de directorios"},
+		cli.StringFlag{"month", "undefined", "Mes para formar el patrón en la búsqueda de directorios"},
+		cli.StringFlag{"day", "undefined", "Día para formar el patrón en la búsqueda de directorios"},
+		cli.StringFlag{"backUpDir", "undefined", "Directorio base para respaldo"},
 	}
 	app.Action = func(c *cli.Context) {
-		globPatternList := fs.GetGlobPatternList(
+		globPatternList := GetGlobPatternList(
 			c.String("baseDir"),
 			c.String("year"),
 			c.String("month"),
 			c.String("day"))
-
-		fmt.Printf("Directorios pendientes de procesar: %d\n", len(globPatternList))
+		l4g.Info("Directorios encontrados: %d", len(globPatternList))
 		for _, globPattern := range globPatternList {
-			files, _ := fs.ListFiles(globPattern)
-			fmt.Printf("%d archivos en directorio %s\n", len(files), globPattern)
+			files, _ := ListFiles(globPattern)
+			l4g.Info("%d archivos en directorio %s", len(files), globPattern)
 			for _, filePath := range files {
-				whenReplaced := func() {
-					backUpFilePath := xmlreplacer.Format(filePath, c.String("baseDir"), c.String("backUpDir"))
-					fs.Mkdir(backUpFilePath)
-					fs.Cp(filePath, backUpFilePath)
-				}
-				xmlreplacer.Replace(filePath, whenReplaced)
+				l4g.Debug("Procesando archivo: %s", filePath)
+				Replace(filePath, c)
 			}
 		}
 	}
+	l4g.Info("Process ID: %d", os.Getpid())
 	app.Run(os.Args)
+	l4g.Info("sweeper stopped")
+	time.Sleep(time.Second)
 }
