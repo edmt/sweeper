@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	l4g "code.google.com/p/log4go"
 	"github.com/codegangsta/cli"
 	"io/ioutil"
 	"strings"
@@ -26,15 +26,22 @@ func Replace(filename string, c *cli.Context) bool {
 		new_content, hasChanged := fixSchemaLocation(string(contents))
 		if hasChanged == true {
 			backUpFilePath := Format(filename, c.String("baseDir"), c.String("backUpDir"))
+			l4g.Debug("Respalda archivo %s en %s", filename, backUpFilePath)
 			BackUp(filename, backUpFilePath)
-
 			new_content_in_bytes := []byte(new_content)
+			l4g.Debug("Intenta escribir en archivo %s", filename)
 			errOnWrite := ioutil.WriteFile(filename, new_content_in_bytes, 0644)
 			if errOnWrite != nil {
-				fmt.Println(filename)
+				l4g.Error("Error al escribir. Archivo: %s, Error: %s", filename, errOnWrite.Error())
+			} else {
+				l4g.Debug("Archivo %s exitosamente corregido", filename)
 			}
 			return true
+		} else {
+			l4g.Debug("No es necesario modificar el archivo %s", filename)
 		}
+	} else {
+		l4g.Error("Error al leer archivo %s", filename)
 	}
 	return false
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	l4g "code.google.com/p/log4go"
 	"io"
 	"os"
 	"path/filepath"
@@ -49,7 +50,7 @@ func Copy(source, destination string) (err error) {
 
 func Mkdir(path string) {
 	if err := os.MkdirAll(filepath.Dir(path), 0777); err != nil {
-		println(err.Error())
+		l4g.Error("Error al crear la estructura de directorios %s. Error:%s", path, err.Error())
 	}
 }
 
