@@ -15,9 +15,9 @@ func init() {
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "sweeper"
-	app.Usage = "Me llama usted, entonces voy, Don Barredora es quien yo soy 🎵"
-	app.Version = "0.1.4"
+	app.Name = "2Pac"
+	app.Usage = ""
+	app.Version = "0.0.0"
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{"baseDir", "undefined", "Directorio base para iniciar la búsqueda"},
@@ -44,6 +44,6 @@ func main() {
 	}
 	l4g.Info("Process ID: %d", os.Getpid())
 	app.Run(os.Args)
-	l4g.Info("sweeper stopped")
+	l4g.Info("%s stopped", app.Name)
 	time.Sleep(time.Second)
 }

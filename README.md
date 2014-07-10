@@ -1,15 +1,9 @@
-## sweeper
-
-Me llama usted, entonces voy, Don Barredora es quien yo soy 🎵
-
+## 2Pac
 
 ## Instalación
 
-    $ go get github.com/edmt/sweeper
+    $ go get github.com/edmt/2Pac
     
 ## Uso
 
-    $ $GOPATH/bin/sweeper -h
-    $ $GOPATH/bin/sweeper --baseDir ~/usersinfo/prod/ \
-      --year 2020 --month 01 --day 01 --backUpDir ~/usersinfo/backup/
-
+    $ $GOPATH/bin/2Pac -h
