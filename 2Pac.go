@@ -21,24 +21,18 @@ func main() {
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{"baseDir", "undefined", "Directorio base para iniciar la búsqueda"},
-		cli.StringFlag{"year", "undefined", "Año para formar el patrón en la búsqueda de directorios"},
-		cli.StringFlag{"month", "undefined", "Mes para formar el patrón en la búsqueda de directorios"},
-		cli.StringFlag{"day", "undefined", "Día para formar el patrón en la búsqueda de directorios"},
 		cli.StringFlag{"backUpDir", "undefined", "Directorio base para respaldo"},
 	}
 	app.Action = func(c *cli.Context) {
 		globPatternList := GetGlobPatternList(
-			c.String("baseDir"),
-			c.String("year"),
-			c.String("month"),
-			c.String("day"))
+			c.String("baseDir"))
 		l4g.Info("Directorios encontrados: %d", len(globPatternList))
 		for _, globPattern := range globPatternList {
 			files, _ := ListFiles(globPattern)
 			l4g.Info("%d archivos en directorio %s", len(files), globPattern)
 			for _, filePath := range files {
 				l4g.Debug("Procesando archivo: %s", filePath)
-				Replace(filePath, c)
+				parseXml(filePath)
 			}
 		}
 	}
