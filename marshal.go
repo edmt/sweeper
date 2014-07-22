@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 type Doc struct {
@@ -13,6 +14,7 @@ type Doc struct {
 	Version     string          `xml:"version,attr"`
 	Emisor      CFDIEmisor      `xml:"Emisor"`
 	Receptor    CFDIReceptor    `xml:"Receptor"`
+	Conceptos   []CFDIConcepto  `xml:"Conceptos>Concepto"`
 	Complemento CFDIComplemento `xml:"Complemento"`
 }
 
@@ -24,6 +26,11 @@ type CFDIEmisor struct {
 type CFDIReceptor struct {
 	XMLName xml.Name `xml:"Receptor"`
 	RFC     string   `xml:"rfc,attr"`
+}
+
+type CFDIConcepto struct {
+	XMLName     xml.Name `xml:"Concepto"`
+	Descripcion string   `xml:"descripcion,attr"`
 }
 
 type CFDIComplemento struct {
@@ -50,6 +57,22 @@ func (d Doc) String() string {
 		d.Version)
 }
 
+func (c CFDIConcepto) ContainsKeyword() bool {
+	desc := strings.ToLower(c.Descripcion)
+	return strings.Contains(desc, "magna") ||
+		strings.Contains(desc, "premium") ||
+		strings.Contains(desc, "diesel")
+}
+
+func (d Doc) ContainsGasKeyword() bool {
+	for _, concept := range d.Conceptos {
+		if concept.ContainsKeyword() {
+			return true
+		}
+	}
+	return false
+}
+
 func parseXml(path string) {
 	xmlFile, err := os.Open(path)
 	if err != nil {
@@ -58,9 +81,11 @@ func parseXml(path string) {
 	}
 	defer xmlFile.Close()
 
-	b, _ := ioutil.ReadAll(xmlFile)
+	rawContent, _ := ioutil.ReadAll(xmlFile)
 
-	var q Doc
-	xml.Unmarshal(b, &q)
-	fmt.Println(q)
+	var query Doc
+	xml.Unmarshal(rawContent, &query)
+	if query.ContainsGasKeyword() {
+		fmt.Println(query)
+	}
 }
