@@ -15,11 +15,11 @@ func GetGlobPatternList(baseDir string) (output []string) {
 
 	for _, value := range rfcList {
 		l4g.Debug("Probando directorio: %s",
-			filepath.Join(value, "CFDS_Recibidos"))
-		dirExists, _ := exists(filepath.Join(value, "CFDS_Recibidos"))
+			filepath.Join(value, "CFDs_Recibidos"))
+		dirExists, _ := exists(filepath.Join(value, "CFDs_Recibidos"))
 		if dirExists {
 			output = append(output,
-				filepath.Join(value, "CFDS_Recibidos", "*", "*", "*", "*.xml"))
+				filepath.Join(value, "CFDs_Recibidos", "*", "*", "*", "*.xml"))
 		}
 	}
 	return
