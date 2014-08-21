@@ -17,11 +17,10 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "2Pac"
 	app.Usage = ""
-	app.Version = "0.0.0"
+	app.Version = "0.0.2"
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{"baseDir", "undefined", "Directorio base para iniciar la búsqueda"},
-		cli.StringFlag{"backUpDir", "undefined", "Directorio base para respaldo"},
 	}
 	app.Action = func(c *cli.Context) {
 		globPatternList := GetGlobPatternList(

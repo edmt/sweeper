@@ -21,6 +21,7 @@ type Doc struct {
 type CFDIEmisor struct {
 	XMLName xml.Name `xml:"Emisor"`
 	RFC     string   `xml:"rfc,attr"`
+	Nombre  string   `xml:"nombre,attr"`
 }
 
 type CFDIReceptor struct {
@@ -49,8 +50,9 @@ func (t TFDTimbreFiscalDigital) String() string {
 }
 
 func (d Doc) String() string {
-	return fmt.Sprintf("%s\t%s\t%s\t%s\t%s",
+	return fmt.Sprintf("%s\t%s\t%s\t%s\t%s\t%s",
 		d.Emisor.RFC,
+		d.Emisor.Nombre,
 		d.Receptor.RFC,
 		d.Complemento.TimbreFiscalDigital.NumeroCertificado,
 		d.Complemento.TimbreFiscalDigital.FechaTimbrado,
@@ -85,7 +87,5 @@ func parseXml(path string) {
 
 	var query Doc
 	xml.Unmarshal(rawContent, &query)
-	if query.ContainsGasKeyword() {
-		fmt.Println(query)
-	}
+	fmt.Println(query)
 }
